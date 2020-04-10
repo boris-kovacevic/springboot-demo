@@ -1,0 +1,29 @@
+Running the mysql container:
+docker run  --name=mysql-user --health-cmd='mysqladmin ping --silent' -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=user -d mysql
+
+--name: the name for the docker container
+
+--health-cmd='mysqladmin ping --silent': whenever `docker ps` is called, it will write out the status of the mysql database
+
+-e: environment variables
+
+-d: detached (background) mode
+
+additionaly:
+-p: publish a container's ports to the host
+for instance, `-p 6303:3036` maps the TCP port 3036 in the container to the localhost's 6303 port
+
+
+Running the spring-boot container:
+docker run --name spring-boot-user -d --link mysql-user:db -p 8080:8080 spring-boot-user
+
+--link mysql-user:db: deprecated, should be linked through the applications themselves
+
+^ how to link it?
+
+In the file ./src/main/resources/application.properties , instead of using localhost as the jdbc link, use the IP Address of the mySQL container from docker.
+
+^ how to obtain the IP Address?
+
+Slow way: run the command `docker inspect <container's ID>` in the terminal, and then find the line reading IP Address
+Fast way: run the command `docker inspect 655 | grep "IPAddress"` in the terminal
